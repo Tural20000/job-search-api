@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,17 +47,20 @@ public class JobController {
 
 	}
 
+	@PreAuthorize("hasAuthority('ROLE_USER')")
 	@PostMapping
 	public ResponseEntity<Job> createJob(@Valid @RequestBody JobRequest jobRequest) {
 		return ResponseEntity.ok(jobService.saveJob(jobRequest));
 
 	}
 
+	@PreAuthorize("hasAuthority('ROLE_USER')")
 	@PutMapping("/{id}")
 	public ResponseEntity<Job> updateJob(@PathVariable Long id, @Valid @RequestBody JobRequest jobRequest) {
 		return ResponseEntity.ok(jobService.updateJob(id, jobRequest));
 	}
 
+	@PreAuthorize("hasAuthority('ROLE_USER')")
 	@DeleteMapping("/{id}")
 	public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
 		jobService.deleteJob(id);
