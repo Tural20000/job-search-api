@@ -20,6 +20,10 @@ public class JobService {
 	private final JobRepository jobRepository;
 
 	public Page<Job> searchJobs(String keyword, String location, JobType jobType, Pageable pageable) {
+		if (keyword != null && !keyword.isEmpty() && location == null && jobType == null) {
+			return jobRepository.fullTextSearch(keyword, pageable);
+		}
+
 		Specification<Job> spec = JobSpecification.filterJobs(keyword, location, jobType);
 		return jobRepository.findAll(spec, pageable);
 	}

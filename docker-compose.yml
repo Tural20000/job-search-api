@@ -1,17 +1,33 @@
-version: '3.8'
-
 services:
   db:
-    image: postgres:15-alpine
+    image: postgres:15
     container_name: job_search_db
     environment:
-      - POSTGRES_USER=tural_user
-      - POSTGRES_PASSWORD=tural_pass
-      - POSTGRES_DB=job_search_api_db
+      POSTGRES_USER: tural_user
+      POSTGRES_PASSWORD: tural_pass
+      POSTGRES_DB: job_search_api_db
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      # BU SƏTİRİ ƏLAVƏ ET:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - job-network
 
-volumes:
-  postgres_data:
+  app:
+    build: .
+    container_name: job_search_app
+    ports:
+      - "8019:8019"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/job_search_api_db
+      SPRING_DATASOURCE_USERNAME: tural_user
+      SPRING_DATASOURCE_PASSWORD: tural_pass
+    networks:
+      - job-network
+
+networks:
+  job-network:
+    driver: bridge

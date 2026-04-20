@@ -34,17 +34,19 @@ public class JobController {
 	public ResponseEntity<Page<Job>> getAllJobs(@RequestParam(required = false) String keyword,
 			@RequestParam(required = false) String location, @RequestParam(required = false) JobType jobType,
 			@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size,
-			@RequestParam(defaultValue = "createdAt") String sortBy,
+			@RequestParam(defaultValue = "created_at") String sortBy, // BURANI DƏYİŞDİK: created_at
 			@RequestParam(defaultValue = "desc") String sortDir) {
 
-		Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+		// Əgər istifadəçi hələ də köhnə createdAt göndərərsə, onu qorumaq üçün:
+		String actualSortBy = sortBy.equals("createdAt") ? "created_at" : sortBy;
+
+		Sort sort = sortDir.equalsIgnoreCase("desc") ? Sort.by(actualSortBy).descending()
+				: Sort.by(actualSortBy).ascending();
 
 		Pageable pageable = PageRequest.of(page, size, sort);
 
 		Page<Job> jobs = jobService.searchJobs(keyword, location, jobType, pageable);
-
 		return ResponseEntity.ok(jobs);
-
 	}
 
 	@PreAuthorize("hasAuthority('ROLE_USER')")

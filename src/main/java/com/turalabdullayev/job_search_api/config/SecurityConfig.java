@@ -29,20 +29,26 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable())
+		http.csrf(csrf -> csrf.disable()).cors(cors -> cors.disable()) // CORS-u hələlik söndürək ki, mane olmasın
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth
-						// 1. İctimai (Public) API: İş elanlarını hər kəs görə bilsin
+						// Əsas GET sorğularını hər kəsə açırıq
 						.requestMatchers(HttpMethod.GET, "/api/jobs/**").permitAll()
+						.requestMatchers(HttpMethod.GET, "/api/jobs").permitAll()
 
-						// 2. Auth və Qeydiyyat: Hər kəsə açıqdır
+						// Auth və digər public endpointlər
 						.requestMatchers("/apis/login", "/apis/refresh-token", "/reg-user").permitAll()
 						.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
 
-						// 3. Digər bütün POST, PUT, DELETE sorğuları üçün login vacibdir
+						// Hər ehtimala qarşı OPTIONS sorğularını açırıq (browser-lər üçün)
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+						// Qalan hər şey bağlıdır
 						.anyRequest().authenticated());
 
+		// JWT filterini əlavə edirik
 		http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
 
