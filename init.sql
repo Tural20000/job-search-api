@@ -1,1 +1,0 @@
-CREATE INDEX IF NOT EXISTS job_search_idx ON jobs USING GIN (to_tsvector('english', title || ' ' || description));
