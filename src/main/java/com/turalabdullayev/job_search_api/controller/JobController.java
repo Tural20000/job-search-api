@@ -5,15 +5,22 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.turalabdullayev.job_search_api.dto.JobRequest;
 import com.turalabdullayev.job_search_api.model.Job;
 import com.turalabdullayev.job_search_api.model.JobType;
 import com.turalabdullayev.job_search_api.service.JobService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -36,6 +43,24 @@ public class JobController {
 		Page<Job> jobs = jobService.searchJobs(keyword, location, jobType, pageable);
 
 		return ResponseEntity.ok(jobs);
+
+	}
+
+	@PostMapping
+	public ResponseEntity<Job> createJob(@Valid @RequestBody JobRequest jobRequest) {
+		return ResponseEntity.ok(jobService.saveJob(jobRequest));
+
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<Job> updateJob(@PathVariable Long id, @Valid @RequestBody JobRequest jobRequest) {
+		return ResponseEntity.ok(jobService.updateJob(id, jobRequest));
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteJob(@PathVariable Long id) {
+		jobService.deleteJob(id);
+		return ResponseEntity.noContent().build();
 
 	}
 

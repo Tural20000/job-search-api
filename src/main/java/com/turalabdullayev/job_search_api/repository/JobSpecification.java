@@ -16,7 +16,6 @@ public class JobSpecification {
 		return (root, query, criteriaBuilder) -> {
 			List<Predicate> predicates = new ArrayList<>();
 
-			// 1. Açar söz axtarışı (Title və ya Description daxilində)
 			if (keyword != null && !keyword.isEmpty()) {
 				String lowerKeyword = "%" + keyword.toLowerCase() + "%";
 				Predicate titlePredicate = criteriaBuilder.like(criteriaBuilder.lower(root.get("title")), lowerKeyword);
@@ -25,12 +24,10 @@ public class JobSpecification {
 				predicates.add(criteriaBuilder.or(titlePredicate, descPredicate));
 			}
 
-			// 2. Yerə görə filtrləmə
 			if (location != null && !location.isEmpty()) {
 				predicates.add(criteriaBuilder.equal(root.get("location"), location));
 			}
 
-			// 3. İş növünə görə filtrləmə
 			if (jobType != null) {
 				predicates.add(criteriaBuilder.equal(root.get("jobType"), jobType));
 			}

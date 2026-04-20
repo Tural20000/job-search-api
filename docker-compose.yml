@@ -9,7 +9,7 @@ services:
       - POSTGRES_PASSWORD=tural_pass
       - POSTGRES_DB=job_search_api_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
